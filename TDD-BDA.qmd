@@ -1,0 +1,103 @@
+---
+title: "TDD-BDA"
+execute: 
+  echo: false
+---
+
+## (Re-)analysis of TDD experiments using BDA
+
+The model should describe how TDD is (positively) associated with *developers' productivity* and *software quality.*
+
+-   **Completed User stories in unit of time (CUS)** is a proxy for developers' productivity
+
+-   **Number of functional bugs (FB)** is a proxy for software quality
+
+-   **Compliance to TDD (TDD)** is the percentage of development cycles that followed TDD test-code-refactor
+
+There are other by-products of **TDD:**
+
+-   **Number of refactorings (REF)** is the amount of refactorings applied to the code
+
+-   **Number of unit test cases (TC)** is the amount of test cases produced
+
+-   **Test cases code coverage (COV)** of the test cases
+
+Developers' experience is a mediator (?) of the effect of TDD
+
+-   **Years of Experience (EX)** in development
+
+-   **Years of programming experience (EJ**) with the same programming language
+
+-   **Familiarity with the IDE (EI)** relevant functionalities (running tests, creating test stubs, automated refactorings).
+
+-   **Familiarity with the testing framework (ET)** and its API
+
+Causal assumptions are modeled using the following DAG
+
+```{r}
+library(dagitty)
+library(rethinking)
+TDD.dag <- dagitty("dag{
+  TDD -> TC -> FB
+  TDD -> FB
+  TDD -> CUS
+  TDD -> REF
+  ET -> TC -> CUS
+  EJ -> CUS
+  EJ -> REF
+  EX -> REF
+  EX -> FB
+  EX -> CUS
+  EI -> REF
+  EI -> CUS
+}")
+drawdag(TDD.dag)
+```
+
+Assumptions:
+
+-   EX -\> CUS. Having worked on a similar problem makes a developer more productive
+
+-   EX -\> REF. Developers have an eye for refactoring patterns
+
+-   EX -\> FB. A more experience developer is less likely to introduce bugs
+
+-   EI -\> CUS. A developer who knows the IDE is more productive as they make use of the IDE features (completion, snippets, etc)
+
+-   EI -\> REF. A developer who knows the IDE can perform automated refactorings
+
+-   EJ -\> CUS. A developer knows the language syntax and does not spend much time consulting documentation or fixing language-specific issues
+
+-   EJ -\> REF. A developer knows language-specific refactorings
+
+-   ET -\> TC. A developer who is familiar with the testing framework can produce more test cases
+
+-   TC -\> FB. More test cases are likely to catch more bugs
+
+-   TC -\> CUS. Test cases act as a safety net which makes a developer more productive
+
+```{r}
+ equivalentDAGs(TDD.dag)
+ impliedConditionalIndependencies(TDD.dag)
+```
+
+## Alternative DAG
+
+```{r}
+library(dagitty)
+library(rethinking)
+TDD.dag.simplified <- dagitty("dag{
+  TDD -> REF
+  TDD -> CUS
+  TDD -> FB
+  TDD -> TC
+  TC -> FB -> CUS <- REF
+  COV -> FB
+}")
+drawdag(TDD.dag.simplified)
+```
+
+```{r}
+equivalentDAGs(TDD.dag.simplified)
+impliedConditionalIndependencies(TDD.dag)
+```

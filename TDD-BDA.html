@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-0.9.606">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>TDD-BDA</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+<script src="TDD-BDA_files/libs/clipboard/clipboard.min.js"></script>
+<script src="TDD-BDA_files/libs/quarto-html/quarto.js"></script>
+<script src="TDD-BDA_files/libs/quarto-html/popper.min.js"></script>
+<script src="TDD-BDA_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="TDD-BDA_files/libs/quarto-html/anchor.min.js"></script>
+<link href="TDD-BDA_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="TDD-BDA_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="TDD-BDA_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="TDD-BDA_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="TDD-BDA_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">TDD-BDA</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<section id="re-analysis-of-tdd-experiments-using-bda" class="level2">
+<h2 class="anchored" data-anchor-id="re-analysis-of-tdd-experiments-using-bda">(Re-)analysis of TDD experiments using BDA</h2>
+<p>The model should describe how TDD is (positively) associated with <em>developers’ productivity</em> and <em>software quality.</em></p>
+<ul>
+<li><p><strong>Completed User stories in unit of time (CUS)</strong> is a proxy for developers’ productivity</p></li>
+<li><p><strong>Number of functional bugs (FB)</strong> is a proxy for software quality</p></li>
+<li><p><strong>Compliance to TDD (TDD)</strong> is the percentage of development cycles that followed TDD test-code-refactor</p></li>
+</ul>
+<p>There are two by-products of <strong>TDD:</strong></p>
+<ul>
+<li><p><strong>Number of refactorings (REF)</strong> is the amount of refactorings applied to the code</p></li>
+<li><p><strong>Number of unit test cases (TC)</strong> is the amount of test cases produced</p></li>
+</ul>
+<p>Developers’ experience is a mediator (?) of the effect of TDD</p>
+<ul>
+<li><p><strong>Years of Experience (EX)</strong> in development</p></li>
+<li><p><strong>Years of programming experience (EJ</strong>) with the same programming language</p></li>
+<li><p><strong>Familiarity with the IDE (EI)</strong> relevant functionalities (running tests, creating test stubs, automated refactorings).</p></li>
+<li><p><strong>Familiarity with the testing framework (ET)</strong> and its API</p></li>
+</ul>
+<p>Causal assumptions are modeled using the following DAG</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: rstan</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: StanHeaders</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: ggplot2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>rstan (Version 2.21.7, GitRev: 2e1f913d3ca3)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>For execution on a local, multicore CPU with excess RAM we recommend calling
+options(mc.cores = parallel::detectCores()).
+To avoid recompilation of unchanged Stan programs, we recommend calling
+rstan_options(auto_write = TRUE)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: cmdstanr</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>This is cmdstanr version 0.5.2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>- CmdStanR documentation and vignettes: mc-stan.org/cmdstanr</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>- CmdStan path: /Users/dfu/.cmdstan/cmdstan-2.30.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>- CmdStan version: 2.30.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: parallel</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>rethinking (Version 2.21)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'rethinking'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:rstan':
+
+    stan</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:stats':
+
+    rstudent</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="TDD-BDA_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Assumptions:</p>
+<ul>
+<li><p>EX -&gt; CUS. Having worked on a similar problem makes a developer more productive</p></li>
+<li><p>EX -&gt; REF. Developers have an eye for refactoring patterns</p></li>
+<li><p>EX -&gt; FB. A more experience developer is less likely to introduce bugs</p></li>
+<li><p>EI -&gt; CUS. A developer who knows the IDE is more productive as they make use of the IDE features (completion, snippets, etc)</p></li>
+<li><p>EI -&gt; REF. A developer who knows the IDE can perform automated refactorings</p></li>
+<li><p>EJ -&gt; CUS. A developer knows the language syntax and does not spend much time consulting documentation or fixing language-specific issues</p></li>
+<li><p>EJ -&gt; REF. A developer knows language-specific refactorings</p></li>
+<li><p>ET -&gt; TC. A developer who is familiar with the testing framework can produce more test cases</p></li>
+<li><p>TC -&gt; FB. More test cases are likely to catch more bugs</p></li>
+<li><p>TC -&gt; CUS. Test cases act as a safety net which makes a developer more productive</p></li>
+</ul>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+dag {
+CUS
+EI
+EJ
+ET
+EX
+FB
+REF
+TC
+TDD
+EI -&gt; CUS
+EI -&gt; REF
+EJ -&gt; CUS
+EJ -&gt; REF
+ET -&gt; TC
+EX -&gt; CUS
+EX -&gt; FB
+EX -&gt; REF
+TC -&gt; CUS
+TC -&gt; FB
+TDD -&gt; CUS
+TDD -&gt; FB
+TDD -&gt; REF
+TDD -&gt; TC
+}</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CUS _||_ ET | TC, TDD
+CUS _||_ FB | EX, TC, TDD
+CUS _||_ REF | EI, EJ, EX, TDD
+EI _||_ EJ
+EI _||_ ET
+EI _||_ EX
+EI _||_ FB
+EI _||_ TC
+EI _||_ TDD
+EJ _||_ ET
+EJ _||_ EX
+EJ _||_ FB
+EJ _||_ TC
+EJ _||_ TDD
+ET _||_ EX
+ET _||_ FB | TC, TDD
+ET _||_ REF
+ET _||_ TDD
+EX _||_ TC
+EX _||_ TDD
+FB _||_ REF | EX, TDD
+REF _||_ TC | TDD</code></pre>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
