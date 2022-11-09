@@ -16,7 +16,9 @@ The model should describe how TDD is (positively) associated with *developers' p
 
 There are other by-products of **TDD:**
 
--   **Number of refactorings (REF)** is the amount of refactorings applied to the code
+-   **Number of refactorings (REF)** is the amount of refactorings applied to the codey
+
+-   
 
 -   **Number of unit test cases (TC)** is the amount of test cases produced
 
@@ -81,7 +83,9 @@ Assumptions:
  impliedConditionalIndependencies(TDD.dag)
 ```
 
-## Alternative DAG
+## Simplified DAG
+
+### (chosen for the project)
 
 ```{r}
 library(dagitty)
@@ -97,7 +101,46 @@ TDD.dag.simplified <- dagitty("dag{
 drawdag(TDD.dag.simplified)
 ```
 
+Here, I have included REF -\> CUS as a *cleaner* code base makes it easier to develop new features.
+
+An alternative DAG can also include COV -\> REF, since a test suite which covers large part of the code base limits regression bugs when introducing refactorings.
+
 ```{r}
-equivalentDAGs(TDD.dag.simplified)
-impliedConditionalIndependencies(TDD.dag)
+equivalent.dags <- equivalentDAGs(TDD.dag.simplified)
+drawdag(equivalent.dags)
+# impliedConditionalIndependencies(TDD.dag)
 ```
+
+-   The second DAG (TC -\> TDD) is excluded, since there is no theory to support it---i.e., one can write a lots of unit tests, without necessarily applying TDD.
+
+-   The third DAG (REF -\> TDD) is interesting. Performing refactorings *cleans* the code base, which in turn means it is easier to apply TDD or at least the production code necessary to fulfill the green step. In turn, refactoring is self-reinforcing---i.e., more refactoring -\> cleaner code -\> easier to apply new refactoring once code is added. Notice: this applies also to non-TDD way of writing production code.
+
+-   As a results of the above, there could be a *unobserved* **CLEAN CODE (CC)** variable which influences both REF and TDD, each influencing CUS. This removes TDD -\> REF.
+
+```{r}
+TDD.dag.latent <- dagitty("dag{
+  REF <- CC 
+  CC -> TDD -> CUS
+  TDD -> FB
+  TDD -> TC
+  TC -> FB -> CUS <- REF
+  COV -> FB
+}")    
+latents(TDD.dag.latent) <- c("CC")
+drawdag(TDD.dag.latent)
+```
+
+Are TC and REF source of post-treatment bias? TC and REF are consequences of the treatment TDD. Basically, the question I would ask the model would be *Once we already know weather REF and TC were done, does TDD matter?*
+
+```{r}
+impliedConditionalIndependencies(TDD.dag.simplified)
+```
+
+However, I am not worried since there is no CUS \_\|\|\_ TDD \| REF d-separation, due to TDD -\> CUS
+
+```{r}
+adjustmentSets(TDD.dag.simplified, exposure="TDD", outcome="CUS" )
+adjustmentSets(TDD.dag.simplified, exposure="TDD", outcome="FB" )
+```
+
+There is no need to control on any of the variable. However, I need to decouple the graph related to FB and CUS. Ideally, FB the outcome of a sub-model, which needs to be computed, before addressing CUS (i.e., FB -\> CUS).
