@@ -1,7 +1,7 @@
 ---
 title: "TDD-BDA"
 execute: 
-  echo: false
+  echo: true
 ---
 
 ## (Re-)analysis of TDD experiments using BDA
@@ -18,8 +18,6 @@ There are other by-products of **TDD:**
 
 -   **Number of refactorings (REF)** is the amount of refactorings applied to the codey
 
--   
-
 -   **Number of unit test cases (TC)** is the amount of test cases produced
 
 -   **Test cases code coverage (COV)** of the test cases
@@ -34,11 +32,14 @@ Developers' experience is a mediator (?) of the effect of TDD
 
 -   **Familiarity with the testing framework (ET)** and its API
 
-Causal assumptions are modeled using the following DAG
-
 ```{r}
 library(dagitty)
 library(rethinking)
+```
+
+Causal assumptions are modeled using the following DAG
+
+```{r}
 TDD.dag <- dagitty("dag{
   TDD -> TC -> FB
   TDD -> FB
@@ -56,7 +57,7 @@ TDD.dag <- dagitty("dag{
 drawdag(TDD.dag)
 ```
 
-Assumptions:
+⁄‹››Assumptions:
 
 -   EX -\> CUS. Having worked on a similar problem makes a developer more productive
 
@@ -88,8 +89,6 @@ Assumptions:
 ### (chosen for the project)
 
 ```{r}
-library(dagitty)
-library(rethinking)
 TDD.dag.simplified <- dagitty("dag{
   TDD -> REF
   TDD -> CUS
@@ -144,3 +143,42 @@ adjustmentSets(TDD.dag.simplified, exposure="TDD", outcome="FB" )
 ```
 
 There is no need to control on any of the variable. However, I need to decouple the graph related to FB and CUS. Ideally, FB the outcome of a sub-model, which needs to be computed, before addressing CUS (i.e., FB -\> CUS).
+
+### A model of FB that does not consider CUS
+
+For simplicity, I will start with the DAG which considers only a single outcome of interest *FB*.
+
+```{r}
+TDD.FB.only <- dagitty("dag{
+  TDD -> REF
+  TDD -> FB
+  TDD -> TC
+  TC -> FB 
+  COV -> FB
+}")
+drawdag(TDD.FB.only)
+```
+
+## Modelling
+
+$FB \sim Normal(\mu_{i}, \sigma)$  
+$\mu_i = \alpha_i + TDD \times \beta_{TDD} + TC \times \beta_{TC} + COV \times \beta_{COV}$   
+$\beta_{TDD} \sim Normal(\mu_{TDD}, \sigma_{TDD})$   
+$\mu_{TDD} = a_{TDD} + REF \times \beta_{REF} + TC \times \beta_{TC}$  
+$\alpha_{TDD} \sim Nomal(0,1)$  
+$\beta_{REF} \sim Normal(1, 0.3)$   
+$\beta_{TC} \sim Normal(4, 1)$   
+$\sigma_{TDD} \sim Exponential(1)$   
+$\beta_{COV} \sim Normal(1, 0.5)$  
+$\sigma \sim Exponential(1)$  
+
+### Prior analysis of TDD
+```{r}
+N <- 100
+alpha_tdd <- rnorm(N, 0, 1)
+beta_ref <- rnorm(N, 1, 0.3)
+beta_tc <- rnorm(N, 4, 1)
+plot(NULL, xlim=c(0,100), ylim=c(0,5))
+for (i in 1:N)
+  curve(rnorm(alpha_tdd[i] + beta_ref[i] * x + beta_tc[i] * x), add=TRUE)
+```
